@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t ai-inference-api ./app
+
+      - name: Run container and test health endpoint
+        run: |
+          docker run -d -p 8000:8000 --name ci-test ai-inference-api
+          sleep 15
+          curl --fail http://localhost:8000/health
+          docker stop ci-test
