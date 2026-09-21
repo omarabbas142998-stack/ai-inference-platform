@@ -3,11 +3,14 @@ from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel
 from transformers import pipeline
 from dotenv import load_dotenv
+from prometheus_fastapi_instrumentator import Instrumentator
 
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
 
 app = FastAPI(title="AI Inference API")
+
+Instrumentator().instrument(app).expose(app)
 
 classifier = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
